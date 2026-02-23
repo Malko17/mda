@@ -4,1104 +4,1768 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mining Research and Underground Software</title>
+    <title>Mining Research and Underground Software | MDA</title>
+    <meta name="description"
+        content="Mining Data Analysis – Geophysics, Hydrogeology, and Geostatistics research group based in Cameroon.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
     <style>
+        :root {
+            --emerald: #10b981;
+            --emerald-dark: #059669;
+            --emerald-glow: rgba(16, 185, 129, .35);
+            --blue: #3b82f6;
+            --violet: #8b5cf6;
+            --amber: #f59e0b;
+            --bg: #060b14;
+            --bg2: #0d1526;
+            --surface: rgba(255, 255, 255, .04);
+            --surface-hover: rgba(255, 255, 255, .07);
+            --border: rgba(255, 255, 255, .08);
+            --border-accent: rgba(16, 185, 129, .3);
+            --text: #f0f4ff;
+            --muted: #6b7a99;
+            --font: 'Inter', sans-serif;
+            --mono: 'JetBrains Mono', monospace;
+            --r: 20px;
+            --r-lg: 28px;
+            --ease: cubic-bezier(.4, 0, .2, 1);
+        }
+
         * {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        html {
+            scroll-behavior: smooth
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: #0a0e1a;
-            color: #e0e0e0;
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
             overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ── CANVAS BACKGROUND ───────────────────────────────── */
+        #bg-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none
+        }
+
+        /* ── AURORA BLOBS ────────────────────────────────────── */
+        .aurora {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: .18;
+            z-index: 0;
+            pointer-events: none;
+            animation: drift 18s ease-in-out infinite alternate
+        }
+
+        .aurora-1 {
+            width: 700px;
+            height: 700px;
+            background: var(--emerald);
+            top: -200px;
+            left: -200px;
+            animation-delay: 0s
+        }
+
+        .aurora-2 {
+            width: 600px;
+            height: 600px;
+            background: var(--blue);
+            bottom: -150px;
+            right: -150px;
+            animation-delay: -6s
+        }
+
+        .aurora-3 {
+            width: 400px;
+            height: 400px;
+            background: var(--violet);
+            top: 40%;
+            left: 55%;
+            animation-delay: -12s
+        }
+
+        @keyframes drift {
+            0% {
+                transform: translate(0, 0) scale(1)
+            }
+
+            100% {
+                transform: translate(60px, 40px) scale(1.1)
+            }
+        }
+
+        /* ── CONTENT WRAPPER ─────────────────────────────────── */
+        .page {
             position: relative;
+            z-index: 1
         }
 
-        body::before {
-            content: '';
-            position: fixed;
+        /* ── NAV ─────────────────────────────────────────────── */
+        nav.topnav {
+            position: sticky;
             top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background:
-                radial-gradient(ellipse at 10% 20%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse at 90% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 50%);
-            z-index: -1;
-        }
-
-        .terminal-corner {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            color: #10b981;
-            opacity: 0.6;
-            z-index: 1000;
-        }
-
-        .terminal-corner div {
-            margin: 2px 0;
-        }
-
-        header {
-            padding: 1.5rem 2rem;
+            z-index: 999;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            backdrop-filter: blur(20px);
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-left: 0;
-            border-right: 0;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            padding: 1rem 2.5rem;
+            background: rgba(6, 11, 20, .6);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border);
+            transition: background .4s var(--ease), box-shadow .4s var(--ease);
         }
 
-        .logo {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #10b981;
+        nav.topnav.scrolled {
+            background: rgba(6, 11, 20, .88);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, .5)
         }
 
-        nav {
+        .nav-logo {
             display: flex;
-            gap: 1.5rem;
-        }
-
-        nav a {
-            color: #9ca3af;
+            align-items: center;
+            gap: .7rem;
+            font-weight: 800;
+            font-size: 1.15rem;
+            letter-spacing: -.5px;
+            color: var(--text);
             text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s;
         }
 
-        nav a:hover {
-            color: #10b981;
+        .nav-logo-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--emerald), var(--blue));
+            display: grid;
+            place-items: center;
+            font-size: .7rem;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 0;
         }
 
+        .nav-links {
+            display: flex;
+            gap: .25rem
+        }
+
+        .nav-links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: .875rem;
+            font-weight: 500;
+            padding: .45rem .9rem;
+            border-radius: 8px;
+            transition: all .25s var(--ease);
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+            background: var(--surface-hover)
+        }
+
+        .nav-cta {
+            background: linear-gradient(135deg, var(--emerald), var(--emerald-dark));
+            color: #fff !important;
+            border-radius: 10px !important;
+            box-shadow: 0 4px 16px var(--emerald-glow);
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px var(--emerald-glow) !important
+        }
+
+        /* ── TERMINAL CORNER ─────────────────────────────────── */
+        .term-corner {
+            position: fixed;
+            bottom: 28px;
+            left: 28px;
+            z-index: 500;
+            font-family: var(--mono);
+            font-size: .72rem;
+            color: var(--emerald);
+            opacity: .55;
+            line-height: 1.8;
+            pointer-events: none;
+        }
+
+        .term-corner span {
+            display: block
+        }
+
+        /* ── HERO ────────────────────────────────────────────── */
         .hero {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 6rem 2rem;
-            text-align: center;
+            padding: 7rem 2rem 5rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
         }
 
-        .book-container {
-            perspective: 1000px;
-            margin-bottom: 3rem;
-            display: inline-block;
+        .hero-text {}
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            background: rgba(16, 185, 129, .12);
+            border: 1px solid rgba(16, 185, 129, .3);
+            color: var(--emerald);
+            border-radius: 100px;
+            padding: .35rem 1rem;
+            font-size: .8rem;
+            font-weight: 600;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            animation: fadeUp .7s var(--ease) both;
         }
 
-        .book {
-            width: 320px;
-            height: 650px;
-            background: linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%);
-            backdrop-filter: blur(20px);
-            border: 8px solid #0a0a0a;
-            border-radius: 50px;
+        .hero-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--emerald);
+            animation: pulse 2s ease-in-out infinite
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1)
+            }
+
+            50% {
+                opacity: .4;
+                transform: scale(.8)
+            }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.4rem, 5vw, 4rem);
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -1.5px;
+            margin-bottom: 1.5rem;
+            animation: fadeUp .7s .1s var(--ease) both;
+        }
+
+        .hero h1 .em {
+            background: linear-gradient(135deg, var(--emerald) 0%, var(--blue) 60%, var(--violet) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-sub {
+            font-size: 1.1rem;
+            color: var(--muted);
+            line-height: 1.8;
+            max-width: 480px;
+            margin-bottom: 2.5rem;
+            animation: fadeUp .7s .2s var(--ease) both;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            animation: fadeUp .7s .3s var(--ease) both
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .8rem 1.8rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: .95rem;
+            text-decoration: none;
+            transition: all .25s var(--ease);
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--emerald), var(--emerald-dark));
+            color: #fff;
+            box-shadow: 0 8px 28px var(--emerald-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 36px var(--emerald-glow)
+        }
+
+        .btn-ghost {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border)
+        }
+
+        .btn-ghost:hover {
+            background: var(--surface-hover);
+            border-color: rgba(255, 255, 255, .15);
+            transform: translateY(-2px)
+        }
+
+        /* ── PHONE MOCKUP ────────────────────────────────────── */
+        .hero-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: fadeLeft .8s .2s var(--ease) both
+        }
+
+        .phone-wrap {
+            perspective: 1200px
+        }
+
+        .phone {
+            width: 300px;
+            height: 620px;
+            background: linear-gradient(160deg, #1c2133, #111827);
+            border-radius: 48px;
+            border: 8px solid #0d111d;
             box-shadow:
-                0 30px 80px rgba(0, 0, 0, 0.6),
-                0 0 0 1px rgba(255, 255, 255, 0.1),
-                inset 0 0 30px rgba(255, 255, 255, 0.05);
-            padding: 0;
+                0 40px 100px rgba(0, 0, 0, .7),
+                0 0 0 1px rgba(255, 255, 255, .07),
+                inset 0 0 40px rgba(255, 255, 255, .03);
             position: relative;
-            transform: rotateY(-5deg) rotateX(2deg);
-            transition: transform 0.3s;
-            animation: float 6s ease-in-out infinite;
             overflow: hidden;
+            transform: rotateY(-8deg) rotateX(4deg);
+            transition: transform .5s var(--ease);
+            animation: phoneFloat 7s ease-in-out infinite;
         }
 
-        .book:hover {
-            transform: rotateY(0deg) rotateX(0deg) translateY(-10px);
+        .phone:hover {
+            transform: rotateY(0) rotateX(0) translateY(-8px) !important
         }
 
-        .iphone-notch {
+        @keyframes phoneFloat {
+
+            0%,
+            100% {
+                transform: rotateY(-8deg) rotateX(4deg) translateY(0)
+            }
+
+            50% {
+                transform: rotateY(-8deg) rotateX(4deg) translateY(-18px)
+            }
+        }
+
+        .phone-notch {
             position: absolute;
             top: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 150px;
-            height: 30px;
-            background: #0a0a0a;
-            border-radius: 0 0 20px 20px;
+            width: 130px;
+            height: 28px;
+            background: #0d111d;
+            border-radius: 0 0 18px 18px;
             z-index: 10;
         }
 
-        .notch-speaker {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-        }
-
-        .notch-camera {
-            position: absolute;
-            top: 8px;
-            right: 20px;
-            width: 10px;
-            height: 10px;
-            background: rgba(100, 100, 255, 0.3);
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .iphone-screen {
+        .phone-screen {
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #0a0e1a 0%, #1a1f3a 100%);
-            padding: 50px 20px 20px 20px;
+            padding: 42px 18px 18px;
+            background: linear-gradient(170deg, #0a0f1e 0%, #0d1a30 100%);
             display: flex;
             flex-direction: column;
-            position: relative;
         }
 
-        .status-bar {
+        .phone-statusbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 10px;
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 30px;
-        }
-
-        .time {
+            font-size: 11px;
+            color: rgba(255, 255, 255, .8);
             font-weight: 600;
+            padding: 0 6px;
+            margin-bottom: 28px;
         }
 
-        .status-icons {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-        }
-
-        .battery {
-            width: 24px;
-            height: 11px;
-            border: 1.5px solid rgba(255, 255, 255, 0.6);
+        .phone-bat {
+            width: 20px;
+            height: 10px;
+            border: 1.5px solid rgba(255, 255, 255, .5);
             border-radius: 2px;
-            position: relative;
+            display: flex;
+            align-items: center;
             padding: 1px;
         }
 
-        .battery::after {
-            content: '';
-            position: absolute;
-            right: -3px;
-            top: 3px;
-            width: 2px;
-            height: 3px;
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 0 2px 2px 0;
-        }
-
-        .battery-fill {
-            width: 70%;
+        .phone-bat div {
+            width: 65%;
             height: 100%;
-            background: #10b981;
-            border-radius: 1px;
+            background: var(--emerald);
+            border-radius: 1px
         }
 
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: rotateY(-5deg) rotateX(2deg) translateY(0);
-            }
-
-            50% {
-                transform: rotateY(-5deg) rotateX(2deg) translateY(-20px);
-            }
-        }
-
-        .book-badge {
-            position: absolute;
-            bottom: 30px;
-            right: 20px;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            padding: 0.7rem 1.2rem;
-            border-radius: 25px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
-            z-index: 5;
-        }
-
-        .book-content {
-            color: #fff;
-            text-align: left;
+        .phone-body {
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 20px;
+            padding: 10px
         }
 
-        .book-logo {
-            color: #10b981;
-            font-weight: bold;
-            font-size: 0.85rem;
-            margin-bottom: 2rem;
-            text-transform: uppercase;
+        .phone-label {
+            font-size: .7rem;
+            font-weight: 700;
             letter-spacing: 2px;
+            color: var(--emerald);
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
         }
 
-        .book-title {
-            font-size: 2.2rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-            line-height: 1.2;
-            background: linear-gradient(135deg, #fff 0%, #10b981 100%);
+        .phone-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: .8rem;
+            background: linear-gradient(135deg, #fff 0%, var(--emerald) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .book-subtitle {
-            font-size: 0.95rem;
-            color: #9ca3af;
-            margin-bottom: 2rem;
-            line-height: 1.5;
+        .phone-desc {
+            font-size: .8rem;
+            color: var(--muted);
+            line-height: 1.6;
+            margin-bottom: 1.8rem
         }
 
-        .book-penguin {
-            font-size: 4rem;
+        .phone-penguin {
+            font-size: 3.5rem;
             text-align: center;
-            margin-top: 2rem;
-            filter: drop-shadow(0 5px 15px rgba(16, 185, 129, 0.3));
+            filter: drop-shadow(0 4px 16px rgba(16, 185, 129, .4))
         }
 
-        .home-indicator {
+        .phone-pill {
             position: absolute;
-            bottom: 10px;
+            bottom: 24px;
+            right: 16px;
+            background: linear-gradient(135deg, var(--emerald), var(--emerald-dark));
+            color: #fff;
+            padding: .5rem 1rem;
+            border-radius: 20px;
+            font-size: .75rem;
+            font-weight: 700;
+            box-shadow: 0 4px 16px var(--emerald-glow);
+        }
+
+        .phone-bar {
+            position: absolute;
+            bottom: 8px;
             left: 50%;
             transform: translateX(-50%);
-            width: 140px;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
+            width: 120px;
+            height: 4px;
+            background: rgba(255, 255, 255, .25);
+            border-radius: 4px;
         }
 
-        h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            line-height: 1.2;
-        }
-
-        h1 .highlight {
-            color: #10b981;
-            display: block;
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            color: #9ca3af;
-            max-width: 700px;
+        /* ── TERMINAL WIDGET ─────────────────────────────────── */
+        .terminal-wrap {
+            max-width: 680px;
             margin: 0 auto 3rem;
-            line-height: 1.6;
-        }
-
-        .terminal-demo {
-            max-width: 700px;
-            margin: 0 auto 3rem;
-            background: rgba(31, 41, 55, 0.6);
+            background: rgba(13, 18, 30, .8);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .6), inset 0 0 20px rgba(255, 255, 255, .02);
+            animation: fadeUp .7s .5s var(--ease) both;
         }
 
-        .terminal-header {
-            background: rgba(55, 65, 81, 0.8);
-            backdrop-filter: blur(10px);
-            padding: 0.75rem 1rem;
+        .term-hdr {
+            background: rgba(255, 255, 255, .04);
+            border-bottom: 1px solid var(--border);
+            padding: .65rem 1rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            gap: .5rem;
         }
 
-        .terminal-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
+        .term-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%
         }
 
-        .dot-red {
-            background: #ef4444;
+        .dot-r {
+            background: #ef4444
         }
 
-        .dot-yellow {
-            background: #f59e0b;
+        .dot-y {
+            background: #f59e0b
         }
 
-        .dot-green {
-            background: #10b981;
+        .dot-g {
+            background: #10b981
         }
 
-        .terminal-title {
-            margin-left: 1rem;
-            font-size: 0.85rem;
-            color: #9ca3af;
+        .term-ttl {
+            margin-left: .8rem;
+            font-size: .8rem;
+            color: var(--muted);
+            font-family: var(--mono)
         }
 
-        .terminal-body {
-            padding: 1.5rem;
-            font-family: 'Courier New', monospace;
-            font-size: 0.95rem;
+        .term-body {
+            padding: 1.4rem 1.6rem;
+            font-family: var(--mono);
+            font-size: .9rem;
+            line-height: 1.9
         }
 
-        .terminal-line {
-            margin: 0.5rem 0;
+        .t-prompt {
+            color: var(--emerald)
         }
 
-        .terminal-prompt {
-            color: #10b981;
+        .t-cmd {
+            color: #60a5fa
         }
 
-        .terminal-command {
-            color: #60a5fa;
+        .t-out {
+            color: #c0cce0
         }
 
-        .terminal-output {
-            color: #e0e0e0;
-        }
-
-        .cta-button {
+        .t-cursor {
             display: inline-block;
-            padding: 1rem 3rem;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 30px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            transition: all 0.3s;
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
-            margin-bottom: 1rem;
+            width: 9px;
+            height: 1.1em;
+            background: var(--emerald);
+            vertical-align: text-bottom;
+            animation: blink 1s step-end infinite;
+            margin-left: 2px
         }
 
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4);
-        }
-
-        .stat {
-            text-align: center;
-            padding: 2rem 1.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            transition: all 0.3s;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.05);
-        }
-
-        .stat:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(16, 185, 129, 0.3);
-            box-shadow: 0 12px 40px rgba(16, 185, 129, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.08);
-        }
-
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .stat-label {
-            font-size: 0.95rem;
-            color: #9ca3af;
-        }
-
-        .floating-element {
-            position: fixed;
-            font-size: 1.5rem;
-            opacity: 0.1;
-            animation: floatRandom 10s infinite ease-in-out;
-            z-index: -1;
-        }
-
-        @keyframes floatRandom {
+        @keyframes blink {
 
             0%,
             100% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-
-            25% {
-                transform: translate(20px, -20px) rotate(90deg);
+                opacity: 1
             }
 
             50% {
-                transform: translate(-20px, 20px) rotate(180deg);
-            }
-
-            75% {
-                transform: translate(20px, 20px) rotate(270deg);
+                opacity: 0
             }
         }
 
-        /* Study card hover */
-        .study-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        /* ── SECTION SHARED ──────────────────────────────────── */
+        .section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 6rem 2rem
         }
 
-        .study-card:hover {
-            transform: translateY(-6px) !important;
+        .section-hdr {
+            text-align: center;
+            margin-bottom: 4rem
         }
 
-        /* Section divider */
-        .section-divider {
-            max-width: 900px;
-            margin: 2rem auto;
-            border: none;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        .section-hdr h2 {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: .8rem;
         }
 
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
+        .grad-green {
+            background: linear-gradient(135deg, var(--emerald), var(--blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        .grad-blue {
+            background: linear-gradient(135deg, var(--blue), var(--violet));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        .section-hdr p {
+            font-size: 1.05rem;
+            color: var(--muted);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.8
+        }
+
+        /* ── CARDS ───────────────────────────────────────────── */
+        .card-grid {
+            display: grid;
+            gap: 1.5rem
+        }
+
+        .g2 {
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr))
+        }
+
+        .g3 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr))
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            overflow: hidden;
+            transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .35s var(--ease);
+            position: relative;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(135deg, rgba(16, 185, 129, .06), transparent);
+            opacity: 0;
+            transition: opacity .35s var(--ease);
+            pointer-events: none;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(16, 185, 129, .25);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .45), 0 0 0 1px rgba(16, 185, 129, .1)
+        }
+
+        .card:hover::before {
+            opacity: 1
+        }
+
+        .card:hover .card-img img {
+            transform: scale(1.05)
+        }
+
+        .card-img {
+            position: relative;
+            overflow: hidden
+        }
+
+        .card-img img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            display: block;
+            transition: transform .45s var(--ease)
+        }
+
+        .card-tag {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            padding: .3rem .85rem;
+            border-radius: 100px;
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            backdrop-filter: blur(8px);
+        }
+
+        .tag-green {
+            background: rgba(16, 185, 129, .85);
+            color: #fff
+        }
+
+        .tag-blue {
+            background: rgba(59, 130, 246, .85);
+            color: #fff
+        }
+
+        .tag-red {
+            background: rgba(239, 68, 68, .85);
+            color: #fff
+        }
+
+        .tag-amber {
+            background: rgba(245, 158, 11, .85);
+            color: #fff
+        }
+
+        .tag-violet {
+            background: rgba(139, 92, 246, .85);
+            color: #fff
+        }
+
+        .card-body {
+            padding: 1.6rem
+        }
+
+        .card-body h3 {
+            color: var(--text);
+            margin-bottom: .65rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1.4
+        }
+
+        .card-body p {
+            color: var(--muted);
+            line-height: 1.75;
+            font-size: .9rem
+        }
+
+        /* Full-width card variant */
+        .card-wide .card-inner {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 300px
+        }
+
+        .card-wide .card-img img {
+            height: 100%;
+            min-height: 260px
+        }
+
+        .card-wide .card-body {
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center
+        }
+
+        /* ERT / image-only card */
+        .card-ert .card-img img {
+            height: auto;
+            max-height: 540px;
+            object-fit: contain;
+            background: #fff
+        }
+
+        .card-ert .card-body {
+            padding: 1.8rem
+        }
+
+        /* ── TAGS ROW ────────────────────────────────────────── */
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .6rem;
+            margin-top: 1.2rem
+        }
+
+        .tag-pill {
+            padding: .3rem .85rem;
+            border-radius: 100px;
+            font-size: .78rem;
+            font-weight: 600;
+            border: 1px solid;
+        }
+
+        .tp-green {
+            background: rgba(16, 185, 129, .12);
+            color: var(--emerald);
+            border-color: rgba(16, 185, 129, .3)
+        }
+
+        .tp-blue {
+            background: rgba(59, 130, 246, .12);
+            color: #60a5fa;
+            border-color: rgba(59, 130, 246, .3)
+        }
+
+        .tp-violet {
+            background: rgba(139, 92, 246, .12);
+            color: #a78bfa;
+            border-color: rgba(139, 92, 246, .3)
+        }
+
+        .tp-amber {
+            background: rgba(245, 158, 11, .12);
+            color: var(--amber);
+            border-color: rgba(245, 158, 11, .3)
+        }
+
+        /* ── ABOUT SECTION ───────────────────────────────────── */
+        .value-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: 2.2rem;
+            transition: all .35s var(--ease);
+        }
+
+        .value-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-accent);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, .4)
+        }
+
+        .value-icon {
+            font-size: 2.2rem;
+            margin-bottom: 1.2rem
+        }
+
+        .value-card h3 {
+            color: var(--emerald);
+            font-size: 1.25rem;
+            margin-bottom: .8rem
+        }
+
+        .value-card p {
+            color: var(--muted);
+            line-height: 1.8;
+            font-size: .92rem
+        }
+
+        .what-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem
+        }
+
+        .what-item {
+            padding: 1.4rem;
+            border-radius: var(--r);
+            background: rgba(255, 255, 255, .03);
+            border: 1px solid rgba(255, 255, 255, .06);
+            transition: all .3s
+        }
+
+        .what-item:hover {
+            background: rgba(16, 185, 129, .07);
+            border-color: rgba(16, 185, 129, .2)
+        }
+
+        .what-item .wit {
+            display: flex;
+            align-items: center;
+            gap: .8rem;
+            margin-bottom: .75rem
+        }
+
+        .what-item .wi-icon {
+            font-size: 1.6rem
+        }
+
+        .what-item h4 {
+            color: var(--text);
+            font-size: .98rem;
+            font-weight: 600
+        }
+
+        .what-item p {
+            color: var(--muted);
+            font-size: .85rem;
+            line-height: 1.7
+        }
+
+        /* ── RESEARCH TOPICS ─────────────────────────────────── */
+        .topic-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: 2rem;
+            transition: all .35s var(--ease);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .topic-card::after {
+            content: '';
+            position: absolute;
+            bottom: -40px;
+            right: -40px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(var(--emerald-glow), transparent 70%);
+            opacity: 0;
+            transition: .35s;
+        }
+
+        .topic-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--border-accent);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, .4)
+        }
+
+        .topic-card:hover::after {
+            opacity: 1
+        }
+
+        .topic-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem
+        }
+
+        .topic-card h3 {
+            color: var(--emerald);
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: .7rem
+        }
+
+        .topic-card p {
+            color: var(--muted);
+            font-size: .88rem;
+            line-height: 1.7
+        }
+
+        /* ── FOOTER ──────────────────────────────────────────── */
+        footer {
+            background: rgba(6, 11, 20, .9);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            margin-top: 6rem;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem 2rem
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem
+        }
+
+        .footer-brand p {
+            color: var(--muted);
+            line-height: 1.8;
+            font-size: .9rem;
+            margin-top: .8rem
+        }
+
+        .footer-col h4 {
+            color: var(--text);
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            font-size: .95rem
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: .7rem
+        }
+
+        .footer-links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: .88rem;
+            transition: color .25s;
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem
+        }
+
+        .footer-links a:hover {
+            color: var(--emerald)
+        }
+
+        .footer-links a::before {
+            content: '→';
+            opacity: 0;
+            transform: translateX(-4px);
+            transition: .25s;
+            font-size: .7rem
+        }
+
+        .footer-links a:hover::before {
+            opacity: 1;
+            transform: translateX(0)
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+            color: var(--muted);
+            font-size: .88rem;
+            margin-bottom: .8rem
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem
+        }
+
+        .footer-bottom p,
+        .footer-bottom a {
+            color: var(--muted);
+            font-size: .82rem;
+            text-decoration: none;
+            transition: color .25s
+        }
+
+        .footer-bottom a:hover {
+            color: var(--emerald)
+        }
+
+        .footer-copy-links {
+            display: flex;
+            gap: 1.5rem
+        }
+
+        /* ── SCROLL REVEAL ───────────────────────────────────── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity .7s var(--ease), transform .7s var(--ease)
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0)
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px)
             }
 
-            .book {
-                width: 280px;
-                height: 580px;
-                padding: 0;
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        @keyframes fadeLeft {
+            from {
+                opacity: 0;
+                transform: translateX(40px)
             }
 
-            .book-title {
-                font-size: 1.8rem;
+            to {
+                opacity: 1;
+                transform: translateX(0)
+            }
+        }
+
+        /* ── RESPONSIVE ──────────────────────────────────────── */
+        @media(max-width:900px) {
+            .hero {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 3rem
             }
 
-            .book-penguin {
-                font-size: 3rem;
+            .hero-sub {
+                max-width: 100%;
+                margin-left: auto;
+                margin-right: auto
             }
 
-            nav {
-                display: none;
+            .hero-actions {
+                justify-content: center
             }
+
+            .hero-visual {
+                animation: fadeUp .8s .3s var(--ease) both
+            }
+
+            .card-wide .card-inner {
+                grid-template-columns: 1fr
+            }
+
+            .card-wide .card-img img {
+                min-height: 220px
+            }
+
+            .nav-links {
+                display: none
+            }
+        }
+
+        @media(max-width:600px) {
+            .hero {
+                padding: 5rem 1.2rem 3rem
+            }
+
+            .section {
+                padding: 4rem 1.2rem
+            }
+
+            .phone {
+                width: 260px;
+                height: 540px
+            }
+
+            .phone-title {
+                font-size: 1.5rem
+            }
+
+            .g2 {
+                grid-template-columns: 1fr
+            }
+        }
+
+        /* ── DIVIDER ─────────────────────────────────────────── */
+        .divider {
+            max-width: 1100px;
+            margin: 0 auto;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .08), transparent)
+        }
+
+        /* ── STAT STRIP ──────────────────────────────────────── */
+        .stat-strip {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 1.8rem 1.4rem;
+            text-align: center;
+            transition: all .3s;
+        }
+
+        .stat-item:hover {
+            border-color: var(--border-accent);
+            transform: translateY(-4px)
+        }
+
+        .stat-num {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--emerald), var(--blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        .stat-lbl {
+            color: var(--muted);
+            font-size: .82rem;
+            margin-top: .3rem
+        }
+
+        /* ── ABOUT BOX ───────────────────────────────────────── */
+        .about-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: 3rem;
+            backdrop-filter: blur(20px);
+        }
+
+        .about-box h3 {
+            color: var(--emerald);
+            font-size: 1.6rem;
+            text-align: center;
+            margin-bottom: 2rem
         }
     </style>
 </head>
 
 <body>
+    <!-- ── AURORA BLOBS ── -->
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="aurora aurora-3"></div>
+    <canvas id="bg-canvas"></canvas>
 
-    <div class="terminal-corner">
-        <div>$ ls -la</div>
-        <div>$ cd /home/mining geophysics</div>
-        <div>$ sudo apt install simpeg</div>
-    </div>
+    <div class="page">
 
-    <div class="floating-element" style="top: 10%; left: 10%;">$</div>
-    <div class="floating-element" style="top: 80%; right: 15%;">~</div>
-    <div class="floating-element" style="top: 40%; right: 5%;">#</div>
-
-    <header>
-        <div class="logo">Mining Data Analysis</div>
-        <nav>
-            <a href="#home">Home</a>
-            <a href="#hydrogeology">Hydrogeology</a>
-            <a href="#geophysics">Geophysics</a>
-            <a href="#topics">Topics</a>
-            <a href="#about">About</a>
-            <a href="#contact">Contact</a>
+        <!-- ── NAV ── -->
+        <nav class="topnav" id="topnav">
+            <a href="#home" class="nav-logo">
+                <div class="nav-logo-dot">M</div>
+                Mining Data Analysis
+            </a>
+            <div class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#hydrogeology">Hydrogeology</a>
+                <a href="#geophysics">Geophysics</a>
+                <a href="#topics">Topics</a>
+                <a href="#about">About</a>
+                <a href="#contact" class="nav-cta">Contact</a>
+            </div>
         </nav>
-    </header>
 
-    <section class="hero" id="home">
-        <div class="book-container">
-            <div class="book">
-                <div class="iphone-notch">
-                    <div class="notch-speaker"></div>
-                    <div class="notch-camera"></div>
+        <!-- ── TERMINAL CORNER ── -->
+        <div class="term-corner">
+            <span>$ ls -la ./surveys/</span>
+            <span>$ python3 inversion.py</span>
+            <span>$ simpeg run --profile danfili</span>
+        </div>
+
+        <!-- ── HERO ── -->
+        <section class="hero" id="home">
+            <div class="hero-text">
+                <div class="hero-badge">
+                    <span></span>
+                    Mining Research &amp; Exploitation Group
                 </div>
-                <div class="iphone-screen">
-                    <div class="status-bar">
-                        <div class="time">9:41</div>
-                        <div class="status-icons">
-                            <span style="font-size: 10px;">📶</span>
-                            <span style="font-size: 10px;">📡</span>
-                            <div class="battery">
-                                <div class="battery-fill"></div>
+                <h1>
+                    Explore the Earth's<br>
+                    <span class="em">Hidden Resources</span>
+                </h1>
+                <p class="hero-sub">
+                    Geophysics, Hydrogeology &amp; Geostatistics — powered by open-source Python and community-driven
+                    science from Cameroon.
+                </p>
+                <div class="hero-actions">
+                    <a href="#hydrogeology" class="btn btn-primary">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24">
+                            <path d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                        Explore Studies
+                    </a>
+                    <a href="#about" class="btn btn-ghost">About Us</a>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="phone-wrap">
+                    <div class="phone">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <div class="phone-statusbar">
+                                <span style="font-weight:700">18:27</span>
+                                <div style="display:flex;gap:6px;align-items:center">
+                                    <span style="font-size:10px">●●●</span>
+                                    <div class="phone-bat">
+                                        <div></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="phone-body">
+                                <div class="phone-label">MDA</div>
+                                <div class="phone-title">Mining Data Analysis</div>
+                                <div class="phone-desc">Your Mining Career in Data Analysis — Start here</div>
+                                <div class="phone-penguin">🐧</div>
+                            </div>
+                        </div>
+                        <div class="phone-pill">Welcome Page</div>
+                        <div class="phone-bar"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── TERMINAL ── -->
+        <div style="max-width:1200px;margin:0 auto;padding:0 2rem">
+            <div class="terminal-wrap reveal">
+                <div class="term-hdr">
+                    <div class="term-dot dot-r"></div>
+                    <div class="term-dot dot-y"></div>
+                    <div class="term-dot dot-g"></div>
+                    <span class="term-ttl">~/Desktop/linux — bash</span>
+                </div>
+                <div class="term-body">
+                    <div><span class="t-prompt">malko@ubuntu:~$&nbsp;</span><span class="t-cmd"
+                            id="typed-cmd"></span><span class="t-cursor" id="t-cursor"></span></div>
+                    <div style="margin-top:.5rem"><span class="t-out" id="typed-out"
+                            style="opacity:0;transition:opacity .5s">Ready to start your mining data analysis journey?
+                            🚀</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── STAT STRIP ── -->
+        <div class="stat-strip reveal">
+            <div class="stat-item">
+                <div class="stat-num">6+</div>
+                <div class="stat-lbl">ERT Profiles</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">100m</div>
+                <div class="stat-lbl">Survey Depth</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">&lt;6%</div>
+                <div class="stat-lbl">Inversion Error</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">5</div>
+                <div class="stat-lbl">Research Topics</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">🌍</div>
+                <div class="stat-lbl">Cameroon-based</div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- ── HYDROGEOLOGY ── -->
+        <section class="section" id="hydrogeology">
+            <div class="section-hdr reveal">
+                <h2><span class="grad-green">Hydrogeology Studies</span></h2>
+                <p>Investigation of subsurface water resources, watershed delineation, drainage network analysis, and
+                    geological mapping to support sustainable groundwater exploration in the Adamawa region of Cameroon.
+                </p>
+            </div>
+
+            <div class="card-grid g2">
+
+                <div class="card reveal">
+                    <div class="card-img">
+                        <img src="Bassins versants.bmp" alt="Bassins Versants">
+                        <span class="card-tag tag-green">Hydrology</span>
+                    </div>
+                    <div class="card-body">
+                        <h3>Watershed Delineation (Bassins Versants)</h3>
+                        <p>Delineation of drainage basins within the Djerem watershed using SRTM DEM data. Highlights
+                            sub-basin boundaries, river network hierarchy (orders 1–6), and flow directions to
+                            characterise hydrological behaviour across the study area.</p>
+                    </div>
+                </div>
+
+                <div class="card reveal">
+                    <div class="card-img">
+                        <img src="Carte géologiques Djerem.bmp" alt="Carte Géologiques Djerem">
+                        <span class="card-tag tag-blue">Geology</span>
+                    </div>
+                    <div class="card-body">
+                        <h3>Geological Map of the Djerem Region</h3>
+                        <p>Geological mapping identifying lithological units, rock formations, and structural features —
+                            forming the geological framework for assessing aquifer potential and groundwater recharge
+                            zones.</p>
+                    </div>
+                </div>
+
+                <div class="card reveal">
+                    <div class="card-img">
+                        <img src="Densite de drainage.png" alt="Densité de Drainage">
+                        <span class="card-tag tag-green">Drainage Analysis</span>
+                    </div>
+                    <div class="card-body">
+                        <h3>Drainage Density Map</h3>
+                        <p>Spatial analysis of drainage density (0–0.78 km/km²) from SRTM data. Higher densities
+                            indicate lower infiltration capacity and greater surface runoff, informing recharge zone
+                            identification.</p>
+                    </div>
+                </div>
+
+                <div class="card reveal">
+                    <div class="card-img">
+                        <img src="Fracturation+lineaments.bmp" alt="Fracturation et Linéaments">
+                        <span class="card-tag tag-red">Structural Geology</span>
+                    </div>
+                    <div class="card-body">
+                        <h3>Fracturing &amp; Lineament Map</h3>
+                        <p>Extraction and analysis of structural lineaments from satellite imagery to identify fault
+                            zones and fracture networks — critical targets for borehole siting in hard-rock aquifer
+                            systems.</p>
+                    </div>
+                </div>
+
+                <!-- Full-width: Localisation Danfili -->
+                <div class="card card-wide reveal" style="grid-column:1 / -1">
+                    <div class="card-inner">
+                        <div class="card-img">
+                            <img src="Localisation Danfili.bmp" alt="Localisation Danfili">
+                            <span class="card-tag tag-amber">Study Area</span>
+                        </div>
+                        <div class="card-body">
+                            <h3>Localisation of the Danfili Study Zone</h3>
+                            <p>Geographic location map situating the Danfili area within its regional administrative and
+                                topographic context in northern Cameroon. This map anchors all hydrogeological and
+                                geophysical investigations conducted in the area.</p>
+                            <div class="tags">
+                                <span class="tag-pill tp-green">Adamawa Region</span>
+                                <span class="tag-pill tp-blue">Cameroon</span>
+                                <span class="tag-pill tp-amber">GCS WGS 1984</span>
                             </div>
                         </div>
                     </div>
-                    <div class="book-content">
-                        <div class="book-logo">MDA</div>
-                        <div class="book-title">Mining Data Analysis <br></div>
-                        <div class="book-subtitle">Your Mining Career<br>In Mining Data Analysis <br>Start here</div>
-                        <div class="book-penguin">🐧</div>
+                </div>
+
+            </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- ── GEOPHYSICS ── -->
+        <section class="section" id="geophysics">
+            <div class="section-hdr reveal">
+                <h2><span class="grad-blue">Geophysics Studies</span></h2>
+                <p>Electrical Resistivity Tomography (ERT) surveys at Danfili to characterise subsurface geology,
+                    identify aquifer structures, and optimise borehole placement for sustainable groundwater
+                    development.</p>
+            </div>
+
+            <!-- ERT 6 Profiles -->
+            <div class="card card-ert reveal" style="margin-bottom:1.5rem">
+                <div class="card-img">
+                    <img src="Tintir.png" alt="ERT Profiles Tintir">
+                    <span class="card-tag tag-blue">ERT — 6 Profiles</span>
+                </div>
+                <div class="card-body">
+                    <h3>Electrical Resistivity Tomography — Inverted Profiles (Tintir)</h3>
+                    <p>Six 2D ERT profiles acquired across the Danfili area using Wenner-Schlumberger arrays. Inversion
+                        errors range from 2.3% to 5.9%, confirming good data quality. Resistivity models (10–3000+ Ω·m)
+                        reveal subsurface architecture: conductive zones (green–blue, &lt;250 Ω·m) indicate
+                        weathered/saturated materials with groundwater potential; resistive bodies (orange–red, &gt;1000
+                        Ω·m) indicate fresh basement rock.</p>
+                    <div class="tags">
+                        <span class="tag-pill tp-blue">Wenner-Schlumberger</span>
+                        <span class="tag-pill tp-violet">2D Inversion</span>
+                        <span class="tag-pill tp-green">0–100 m Depth</span>
+                        <span class="tag-pill tp-amber">Err &lt; 6%</span>
                     </div>
-                    <div class="home-indicator"></div>
-                </div>
-                <div class="book-badge">Welcome to our official page<br><small style="font-size: 0.9rem;"><br></small>
-                </div>
-            </div>
-        </div>
-
-        <h1>
-            Mining Research and Exploitation <br>
-            <span class="highlight">Group</span>
-        </h1>
-        <p class="subtitle">Master Mining Data Analysis and Modeling</p>
-
-        <div class="terminal-demo">
-            <div class="terminal-header">
-                <div class="terminal-dot dot-red"></div>
-                <div class="terminal-dot dot-yellow"></div>
-                <div class="terminal-dot dot-green"></div>
-                <div class="terminal-title">~/Desktop/linux</div>
-            </div>
-            <div class="terminal-body">
-                <div class="terminal-line">
-                    <span class="terminal-prompt">malko@ubuntu:~$</span>
-                    <span class="terminal-command"> echo "Your mining data analysis journey start here...?"</span>
-                </div>
-                <div class="terminal-line">
-                    <span class="terminal-output">Ready to start your mining data analysis journey?</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===================== HYDROGEOLOGY STUDIES ===================== -->
-    <section id="hydrogeology" style="max-width: 1200px; margin: 5rem auto; padding: 0 2rem;">
-        <h2
-            style="text-align: center; font-size: 2.5rem; margin-bottom: 0.6rem; background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-            Hydrogeology Studies</h2>
-        <p
-            style="text-align: center; color: #9ca3af; max-width: 800px; margin: 0 auto 3rem; font-size: 1.05rem; line-height: 1.8;">
-            Investigation of subsurface water resources, watershed delineation, drainage network analysis, and
-            geological mapping to support sustainable groundwater exploration in the Adamawa region of Cameroon.
-        </p>
-
-        <div
-            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(520px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
-
-            <!-- Card: Bassins versants -->
-            <div class="study-card"
-                style="background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
-                <div style="position: relative; overflow: hidden;">
-                    <img src="Bassins versants.bmp" alt="Bassins Versants"
-                        style="width: 100%; height: 300px; object-fit: cover; display: block; transition: transform 0.4s;"
-                        onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
-                    <div
-                        style="position: absolute; top: 12px; left: 12px; background: rgba(16,185,129,0.9); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
-                        Hydrology</div>
-                </div>
-                <div style="padding: 1.8rem;">
-                    <h3 style="color: #e0e0e0; margin-bottom: 0.8rem; font-size: 1.2rem;">Watershed Delineation (Bassins
-                        Versants)</h3>
-                    <p style="color: #9ca3af; line-height: 1.7; font-size: 0.95rem;">Delineation of drainage basins
-                        within the Djerem watershed using SRTM DEM data. The map highlights sub-basin boundaries, river
-                        network hierarchy (orders 1–6), and flow directions to characterize hydrological behaviour
-                        across the study area.</p>
                 </div>
             </div>
 
-            <!-- Card: Geological map -->
-            <div class="study-card"
-                style="background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
-                <div style="position: relative; overflow: hidden;">
-                    <img src="Carte géologiques Djerem.bmp" alt="Carte Géologiques Djerem"
-                        style="width: 100%; height: 300px; object-fit: cover; display: block; transition: transform 0.4s;"
-                        onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
-                    <div
-                        style="position: absolute; top: 12px; left: 12px; background: rgba(59,130,246,0.9); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
-                        Geology</div>
+            <!-- ERT 2 Profiles -->
+            <div class="card card-ert reveal" style="margin-bottom:1.5rem">
+                <div class="card-img">
+                    <img src="ABTINEBIL.png" alt="ERT Profiles Abtinebil">
+                    <span class="card-tag tag-blue">ERT — 2 Profiles</span>
                 </div>
-                <div style="padding: 1.8rem;">
-                    <h3 style="color: #e0e0e0; margin-bottom: 0.8rem; font-size: 1.2rem;">Geological Map of the Djerem
-                        Region</h3>
-                    <p style="color: #9ca3af; line-height: 1.7; font-size: 0.95rem;">Geological mapping of the Djerem
-                        watershed identifying lithological units, rock formations, and structural features. This map
-                        forms the geological framework for assessing aquifer potential and groundwater recharge zones.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Card: Drainage density -->
-            <div class="study-card"
-                style="background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
-                <div style="position: relative; overflow: hidden;">
-                    <img src="Densite de drainage.png" alt="Densité de Drainage"
-                        style="width: 100%; height: 300px; object-fit: cover; display: block; transition: transform 0.4s;"
-                        onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
-                    <div
-                        style="position: absolute; top: 12px; left: 12px; background: rgba(16,185,129,0.9); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
-                        Drainage Analysis</div>
-                </div>
-                <div style="padding: 1.8rem;">
-                    <h3 style="color: #e0e0e0; margin-bottom: 0.8rem; font-size: 1.2rem;">Drainage Density Map</h3>
-                    <p style="color: #9ca3af; line-height: 1.7; font-size: 0.95rem;">Spatial analysis of drainage
-                        density across the Djerem watershed (0–0.78 km/km²), derived from SRTM data. Higher drainage
-                        densities indicate areas with lower infiltration capacity and greater surface runoff, informing
-                        recharge zone identification.</p>
-                </div>
-            </div>
-
-            <!-- Card: Fracturation -->
-            <div class="study-card"
-                style="background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
-                <div style="position: relative; overflow: hidden;">
-                    <img src="Fracturation+lineaments.bmp" alt="Fracturation et Linéaments"
-                        style="width: 100%; height: 300px; object-fit: cover; display: block; transition: transform 0.4s;"
-                        onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
-                    <div
-                        style="position: absolute; top: 12px; left: 12px; background: rgba(239,68,68,0.9); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
-                        Structural Geology</div>
-                </div>
-                <div style="padding: 1.8rem;">
-                    <h3 style="color: #e0e0e0; margin-bottom: 0.8rem; font-size: 1.2rem;">Fracturing &amp; Lineament Map
-                    </h3>
-                    <p style="color: #9ca3af; line-height: 1.7; font-size: 0.95rem;">Extraction and analysis of
-                        structural lineaments from satellite imagery to identify fault zones and fracture networks.
-                        These features serve as preferential groundwater pathways and are critical targets for borehole
-                        siting in hard-rock aquifer systems.</p>
-                </div>
-            </div>
-
-            <!-- Card: Localisation Danfili – full-width -->
-            <div class="study-card"
-                style="background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.3); grid-column: 1 / -1;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0; min-height: 320px;">
-                    <div style="position: relative; overflow: hidden;">
-                        <img src="Localisation Danfili.bmp" alt="Localisation Danfili"
-                            style="width: 100%; height: 100%; min-height: 280px; object-fit: cover; display: block; transition: transform 0.4s;"
-                            onmouseover="this.style.transform='scale(1.04)'"
-                            onmouseout="this.style.transform='scale(1)'">
-                        <div
-                            style="position: absolute; top: 12px; left: 12px; background: rgba(245,158,11,0.9); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
-                            Study Area</div>
+                <div class="card-body">
+                    <h3>Electrical Resistivity Tomography — Inverted Profiles (Abtinebil)</h3>
+                    <p>Two 2D ERT profiles acquired with Wenner-Schlumberger arrays. Resistivity contrasts clearly
+                        delineate weathered horizons and fractured basement zones, with dashed markers indicating
+                        recommended borehole positions at conductor–resistor contacts.</p>
+                    <div class="tags">
+                        <span class="tag-pill tp-blue">Wenner-Schlumberger</span>
+                        <span class="tag-pill tp-violet">2D Inversion</span>
+                        <span class="tag-pill tp-green">0–100 m Depth</span>
+                        <span class="tag-pill tp-amber">Err &lt; 6%</span>
                     </div>
-                    <div style="padding: 2.5rem; display: flex; flex-direction: column; justify-content: center;">
-                        <h3 style="color: #e0e0e0; margin-bottom: 1rem; font-size: 1.35rem;">Localisation of the Danfili
-                            Study Zone</h3>
-                        <p style="color: #9ca3af; line-height: 1.8; font-size: 0.95rem; margin-bottom: 1.5rem;">
-                            Geographic location map of the Danfili area, situating the study zone within its regional
-                            administrative and topographic context in northern Cameroon. This map anchors all
-                            hydrogeological and geophysical investigations conducted in the area.</p>
-                        <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
-                            <span
-                                style="background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); color: #10b981; padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;">Adamawa
-                                Region</span>
-                            <span
-                                style="background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.4); color: #60a5fa; padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;">Cameroon</span>
-                            <span
-                                style="background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.4); color: #f59e0b; padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;">GCS
-                                WGS 1984</span>
+                </div>
+            </div>
+
+            <!-- 2-col grid -->
+            <div class="card-grid g2">
+
+                <div class="card reveal">
+                    <div class="card-img">
+                        <img src="Forages_profils.jpg" alt="Survey Localisation">
+                        <span class="card-tag tag-violet">Survey Layout</span>
+                    </div>
+                    <div class="card-body">
+                        <h3>ERT Profile Layout — Danfili Village</h3>
+                        <p>Satellite view showing ERT profiles (pink lines), existing boreholes and wells (pw1–pw4,
+                            PHM1–PHM6, Forage Scanwater), and lineament traces. Layout designed to cross key structural
+                            features and evaluate aquifer continuity.</p>
+                    </div>
+                </div>
+
+                <div class="card reveal">
+                    <div class="card-img">
+                        <img src="3Dmodel.PNG" alt="3D Resistivity Model">
+                        <span class="card-tag tag-blue">3D Modeling</span>
+                    </div>
+                    <div class="card-body">
+                        <h3>3D Subsurface Resistivity Model</h3>
+                        <p>3D rendering of the subsurface resistivity distribution synthesised from multiple ERT
+                            profiles, providing a volumetric view of the aquifer architecture and fracture zones across
+                            the Danfili survey area.</p>
+                    </div>
+                </div>
+
+                <div class="card reveal">
+                    <div class="card-img">
+                        <img src="1771425120379.PNG" alt="Gassawi Ismael">
+                        <span class="card-tag tag-blue">Field Geophysicist</span>
+                    </div>
+                    <div class="card-body">
+                        <h3>Gassawi Ismael</h3>
+                        <p style="color:var(--emerald);font-weight:600;margin-bottom:.4rem">BYGRAPH &amp; CAERR BTP</p>
+                        <p>Field geophysicist responsible for ERT data acquisition, electrode layout, and on-site
+                            quality control throughout the Danfili survey campaign.</p>
+                    </div>
+                </div>
+
+                <div class="card reveal">
+                    <div class="card-img">
+                        <img src="1771425305689.PNG" alt="Gaya Sylvestre">
+                        <span class="card-tag tag-blue">Processing Geophysicist</span>
+                    </div>
+                    <div class="card-body">
+                        <h3>Gaya Sylvestre</h3>
+                        <p style="color:var(--emerald);font-weight:600;margin-bottom:.4rem">RHEC-SARL · SEVES NGO</p>
+                        <p>Processing geophysicist responsible for data inversion, quality control, and interpretation
+                            of resistivity models from all ERT profiles.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- ── ABOUT ── -->
+        <section class="section" id="about">
+            <div class="section-hdr reveal">
+                <h2><span class="grad-green">About Us</span></h2>
+                <p>A passionate group of mining engineers, geophysicists, and data scientists dedicated to
+                    revolutionising the mining industry through innovative data analysis and open-source technologies.
+                </p>
+            </div>
+
+            <div class="card-grid g3" style="margin-bottom:2rem">
+                <div class="value-card reveal">
+                    <div class="value-icon">🎯</div>
+                    <h3>Our Mission</h3>
+                    <p>To empower mining professionals with cutting-edge data analysis skills, bridging the gap between
+                        traditional mining practices and modern computational methods through education, research, and
+                        collaboration.</p>
+                </div>
+                <div class="value-card reveal">
+                    <div class="value-icon">👁️</div>
+                    <h3>Our Vision</h3>
+                    <p>To become Africa's leading hub for mining data science innovation, fostering a community where
+                        open-source tools and collaborative research drive sustainable mineral exploration and
+                        extraction.</p>
+                </div>
+                <div class="value-card reveal">
+                    <div class="value-icon">💡</div>
+                    <h3>Our Values</h3>
+                    <p>Open collaboration, continuous learning, scientific rigour, and sustainable practices. We believe
+                        in making advanced mining analytics accessible to everyone through education and open-source
+                        development.</p>
+                </div>
+            </div>
+
+            <div class="about-box reveal">
+                <h3>What We Do</h3>
+                <div class="what-grid">
+                    <div class="what-item">
+                        <div class="wit"><span class="wi-icon">📚</span>
+                            <h4>Training &amp; Workshops</h4>
+                        </div>
+                        <p>Regular hands-on sessions covering Python, Linux, SimPEG, and industry-standard mining
+                            software.</p>
+                    </div>
+                    <div class="what-item">
+                        <div class="wit"><span class="wi-icon">🔬</span>
+                            <h4>Research Projects</h4>
+                        </div>
+                        <p>Collaborative research in geophysical inversion, ML applications, and 3D geological
+                            modelling.</p>
+                    </div>
+                    <div class="what-item">
+                        <div class="wit"><span class="wi-icon">🤝</span>
+                            <h4>Community Building</h4>
+                        </div>
+                        <p>Fostering a supportive network of professionals, students, and enthusiasts in mining
+                            analytics.</p>
+                    </div>
+                    <div class="what-item">
+                        <div class="wit"><span class="wi-icon">💻</span>
+                            <h4>Open Source Dev</h4>
+                        </div>
+                        <p>Contributing to and developing tools that make mining data analysis more accessible
+                            worldwide.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- ── TOPICS ── -->
+        <section class="section" id="topics">
+            <div class="section-hdr reveal">
+                <h2><span class="grad-green">Research Topics</span></h2>
+            </div>
+            <div class="card-grid g3">
+                <div class="topic-card reveal">
+                    <div class="topic-icon">🔬</div>
+                    <h3>Geophysical Inversion</h3>
+                    <p>Advanced techniques in electromagnetic, gravity, and seismic data inversion using SimPEG and
+                        modern algorithms.</p>
+                </div>
+                <div class="topic-card reveal">
+                    <div class="topic-icon">📊</div>
+                    <h3>Machine Learning</h3>
+                    <p>Applying AI and ML models for ore deposit prediction, mineral classification, and exploration
+                        optimisation.</p>
+                </div>
+                <div class="topic-card reveal">
+                    <div class="topic-icon">🗺️</div>
+                    <h3>3D Geological Modeling</h3>
+                    <p>Building comprehensive subsurface models using Python, GemPy, and industry-standard software.</p>
+                </div>
+                <div class="topic-card reveal">
+                    <div class="topic-icon">⚡</div>
+                    <h3>Data Processing</h3>
+                    <p>Automated workflows for geochemical analysis, drilling data, and multi-sensor integration.</p>
+                </div>
+                <div class="topic-card reveal">
+                    <div class="topic-icon">🌍</div>
+                    <h3>Remote Sensing</h3>
+                    <p>Satellite imagery analysis for mineral exploration using spectral data and terrain modelling.</p>
+                </div>
+                <div class="topic-card reveal">
+                    <div class="topic-icon">💻</div>
+                    <h3>Open Source Tools</h3>
+                    <p>Development and training on Python libraries, Linux environments, and collaborative coding
+                        practices.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── FOOTER ── -->
+        <footer id="contact">
+            <div class="footer-inner">
+                <div class="footer-grid">
+                    <div class="footer-brand">
+                        <div class="nav-logo" style="display:inline-flex">
+                            <div class="nav-logo-dot">M</div>
+                            Mining Data Analysis
+                        </div>
+                        <p>Empowering the next generation of mining professionals with cutting-edge data analysis skills
+                            and open-source technologies.</p>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Quick Links</h4>
+                        <div class="footer-links">
+                            <a href="#home">Home</a>
+                            <a href="#hydrogeology">Hydrogeology Studies</a>
+                            <a href="#geophysics">Geophysics Studies</a>
+                            <a href="#topics">Research Topics</a>
+                            <a href="#about">About Us</a>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===================== GEOPHYSICS STUDIES ===================== -->
-    <section id="geophysics" style="max-width: 1200px; margin: 5rem auto; padding: 0 2rem;">
-        <h2
-            style="text-align: center; font-size: 2.5rem; margin-bottom: 0.6rem; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-            Geophysics Studies</h2>
-        <p
-            style="text-align: center; color: #9ca3af; max-width: 800px; margin: 0 auto 3rem; font-size: 1.05rem; line-height: 1.8;">
-            Electrical Resistivity Tomography (ERT) surveys conducted at Danfili to characterize subsurface geology,
-            identify aquifer structures, and optimize borehole placement for sustainable groundwater development.
-        </p>
-
-        <!-- ERT Profiles – full width -->
-        <div style="background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(59,130,246,0.25); border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.3); margin-bottom: 2rem; transition: transform 0.3s, box-shadow 0.3s;"
-            onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 48px rgba(59,130,246,0.2)'"
-            onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 8px 32px rgba(0,0,0,0.3)'">
-            <div style="position: relative;">
-                <img src="Tintir.png" alt="ERT Profiles"
-                    style="width: 100%; object-fit: contain; display: block; background: #fff;">
-                <div
-                    style="position: absolute; top: 12px; left: 12px; background: rgba(59,130,246,0.9); color: white; padding: 4px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
-                    ERT — 6 Profiles</div>
-            </div>
-            <div style="padding: 2rem;">
-                <h3 style="color: #e0e0e0; margin-bottom: 0.8rem; font-size: 1.3rem;">Electrical Resistivity Tomography
-                    — Inverted Profiles</h3>
-                <p style="color: #9ca3af; line-height: 1.7; font-size: 0.95rem; margin-bottom: 1rem;">Six 2D ERT
-                    profiles (Profiles 1–5 including two segments on Profile 5) were acquired across the Danfili survey
-                    area using Wenner-Schlumberger arrays. Inversion errors range from 2.3% to 5.9%, confirming good
-                    data quality. The resistivity models (10–3000+ Ω·m) reveal subsurface architecture: conductive zones
-                    (green–blue, &lt;250 Ω·m) correspond to weathered/saturated materials with groundwater potential,
-                    while resistive bodies (orange–red, &gt;1000 Ω·m) indicate fresh basement rock. Dashed vertical
-                    lines mark recommended borehole positions at conductor–resistor contacts.</p>
-                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                    <span
-                        style="background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.4); color: #60a5fa; padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;">Wenner-Schlumberger</span>
-                    <span
-                        style="background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.4); color: #a78bfa; padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;">2D
-                        Inversion</span>
-                    <span
-                        style="background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); color: #10b981; padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;">0–100
-                        m Depth</span>
-                    <span
-                        style="background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.4); color: #f59e0b; padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;">Err
-                        &lt; 6%</span>
-                </div>
-            </div>
-        </div>
-
-        <div style="background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(59,130,246,0.25); border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.3); margin-bottom: 2rem; transition: transform 0.3s, box-shadow 0.3s;"
-            onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 48px rgba(59,130,246,0.2)'"
-            onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 8px 32px rgba(0,0,0,0.3)'">
-            <div style="position: relative;">
-                <img src="ABTINEBIL.png" alt="ERT Profiles"
-                    style="width: 100%; object-fit: contain; display: block; background: #fff;">
-                <div
-                    style="position: absolute; top: 12px; left: 12px; background: rgba(59,130,246,0.9); color: white; padding: 4px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
-                    ERT — 2 Profiles</div>
-            </div>
-            <div style="padding: 2rem;">
-                <h3 style="color: #e0e0e0; margin-bottom: 0.8rem; font-size: 1.3rem;">Electrical Resistivity Tomography
-                    — Inverted Profiles</h3>
-                <p style="color: #9ca3af; line-height: 1.7; font-size: 0.95rem; margin-bottom: 1rem;">Six 2D ERT
-                    profiles (Profiles 1–5 including two segments on Profile 2) were acquired across the Danfili survey
-                    area using Wenner-Schlumberger arrays. Inversion errors range from 2.3% to 5.9%, confirming good
-                    data quality. The resistivity models (10–3000+ Ω·m) reveal subsurface architecture: conductive zones
-                    (green–blue, &lt;250 Ω·m) correspond to weathered/saturated materials with groundwater potential,
-                    while resistive bodies (orange–red, &gt;1000 Ω·m) indicate fresh basement rock. Dashed vertical
-                    lines mark recommended borehole positions at conductor–resistor contacts.</p>
-                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                    <span
-                        style="background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.4); color: #60a5fa; padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;">Wenner-Schlumberger</span>
-                    <span
-                        style="background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.4); color: #a78bfa; padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;">2D
-                        Inversion</span>
-                    <span
-                        style="background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); color: #10b981; padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;">0–100
-                        m Depth</span>
-                    <span
-                        style="background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.4); color: #f59e0b; padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;">Err
-                        &lt; 6%</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Localisation + P5seq1 -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(480px, 1fr)); gap: 2rem;">
-
-            <div style="background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(59,130,246,0.25); border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.3); transition: transform 0.3s, box-shadow 0.3s;"
-                onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 48px rgba(59,130,246,0.2)'"
-                onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 8px 32px rgba(0,0,0,0.3)'">
-                <div style="position: relative; overflow: hidden;">
-                    <img src="Forages_profils.jpg" alt="Survey Localisation"
-                        style="width: 100%; height: 310px; object-fit: cover; display: block; transition: transform 0.4s;"
-                        onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
-                    <div
-                        style="position: absolute; top: 12px; left: 12px; background: rgba(139,92,246,0.9); color: white; padding: 4px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
-                        Survey Layout</div>
-                </div>
-                <div style="padding: 1.8rem;">
-                    <h3 style="color: #e0e0e0; margin-bottom: 0.8rem; font-size: 1.2rem;">ERT Profile Layout — Danfili
-                        Village</h3>
-                    <p style="color: #9ca3af; line-height: 1.7; font-size: 0.95rem;">Google Earth satellite view showing
-                        the spatial distribution of ERT profiles (pink lines), existing boreholes and wells (pw1–pw4,
-                        PHM1–PHM6, Puits de l'État n°1&2, Forage Scanwater), and lineament traces (black lines). The
-                        layout was designed to cross key structural features and evaluate aquifer continuity across the
-                        survey zone.</p>
-                </div>
-            </div>
-
-            <div style="background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(59,130,246,0.25); border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.3); transition: transform 0.3s, box-shadow 0.3s;"
-                onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 48px rgba(59,130,246,0.2)'"
-                onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 8px 32px rgba(0,0,0,0.3)'">
-                <div style="position: relative; overflow: hidden;">
-                    <img src="3Dmodel.PNG" alt="Profile 5 Sequence 1"
-                        style="width: 100%; height: 310px; object-fit: cover; display: block; transition: transform 0.4s;"
-                        onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
-                    <div
-                        style="position: absolute; top: 12px; left: 12px; background: rgba(59,130,246,0.9); color: white; padding: 4px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
-                        3D modeling </div>
-                </div>
-                <div style="padding: 1.8rem;">
-                    <h3 style="color: #e0e0e0; margin-bottom: 0.8rem; font-size: 1.2rem;">ERT Electrode Layout — Profile
-                        5 Sequence 1</h3>
-                    <p style="color: #9ca3af; line-height: 1.7; font-size: 0.95rem;">3D modeling of the subsurface
-                        resistivity distribution along Along profiles .</p>
-                </div>
-            </div>
-
-
-            <div style="background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(59,130,246,0.25); border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.3); transition: transform 0.3s, box-shadow 0.3s;"
-                onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 48px rgba(59,130,246,0.2)'"
-                onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 8px 32px rgba(0,0,0,0.3)'">
-                <div style="position: relative; overflow: hidden;">
-                    <img src="1771425120379.PNG" alt="Profile 5 Sequence 1"
-                        style="width: 100%; height: 310px; object-fit: cover; display: block; transition: transform 0.4s;"
-                        onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
-                    <div
-                        style="position: absolute; top: 12px; left: 12px; background: rgba(59,130,246,0.9); color: white; padding: 4px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
-                        GASSAWI ISMAEL: Field Geophysicist </div>
-                </div>
-                <div style="padding: 1.8rem;">
-                    <h3 style="color: #e0e0e0; margin-bottom: 0.8rem; font-size: 1.2rem;"></h3>
-                    <p style="color: #9ca3af; line-height: 1.7; font-size: 0.95rem;"> BYGRAPH AND CAERR BTP</p>
-                </div>
-            </div>
-
-            <div style="background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(59,130,246,0.25); border-radius: 20px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.3); transition: transform 0.3s, box-shadow 0.3s;"
-                onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 48px rgba(59,130,246,0.2)'"
-                onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 8px 32px rgba(0,0,0,0.3)'">
-                <div style="position: relative; overflow: hidden;">
-                    <img src="1771425305689.PNG" alt="Profile 5 Sequence 1"
-                        style="width: 100%; height: 310px; object-fit: cover; display: block; transition: transform 0.4s;"
-                        onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
-                    <div
-                        style="position: absolute; top: 12px; left: 12px; background: rgba(59,130,246,0.9); color: white; padding: 4px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
-                        GAYA SYLVESTRE: Processing Geophysicist </div>
-                </div>
-                <div style="padding: 1.8rem;">
-                    <h3 style="color: #e0e0e0; margin-bottom: 0.8rem; font-size: 1.2rem;"></h3>
-                    <p style="color: #9ca3af; line-height: 1.7; font-size: 0.95rem;"> RHEC-SARL-SEVES NGO</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===================== ABOUT ===================== -->
-    <section id="about" style="max-width: 1200px; margin: 5rem auto; padding: 0 2rem;">
-        <h2
-            style="text-align: center; font-size: 2.5rem; margin-bottom: 1.5rem; background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-            About Us</h2>
-        <p
-            style="text-align: center; color: #9ca3af; max-width: 800px; margin: 0 auto 4rem; font-size: 1.1rem; line-height: 1.8;">
-            We are a passionate group of mining engineers, geophysicists, and data scientists dedicated to
-            revolutionizing the mining industry through innovative data analysis and open-source technologies.
-        </p>
-
-        <div
-            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 4rem;">
-            <div class="stat" style="text-align: left; padding: 2.5rem;">
-                <div style="font-size: 2.5rem; margin-bottom: 1.5rem;">🎯</div>
-                <h3 style="color: #10b981; margin-bottom: 1rem; font-size: 1.4rem;">Our Mission</h3>
-                <p style="color: #9ca3af; line-height: 1.8;">To empower mining professionals with cutting-edge data
-                    analysis skills, bridging the gap between traditional mining practices and modern computational
-                    methods through education, research, and collaboration.</p>
-            </div>
-            <div class="stat" style="text-align: left; padding: 2.5rem;">
-                <div style="font-size: 2.5rem; margin-bottom: 1.5rem;">👁️</div>
-                <h3 style="color: #10b981; margin-bottom: 1rem; font-size: 1.4rem;">Our Vision</h3>
-                <p style="color: #9ca3af; line-height: 1.8;">To become Africa's leading hub for mining data science
-                    innovation, fostering a community where open-source tools and collaborative research drive
-                    sustainable mineral exploration and extraction.</p>
-            </div>
-            <div class="stat" style="text-align: left; padding: 2.5rem;">
-                <div style="font-size: 2.5rem; margin-bottom: 1.5rem;">💡</div>
-                <h3 style="color: #10b981; margin-bottom: 1rem; font-size: 1.4rem;">Our Values</h3>
-                <p style="color: #9ca3af; line-height: 1.8;">Open collaboration, continuous learning, scientific rigor,
-                    and sustainable practices. We believe in making advanced mining analytics accessible to everyone
-                    through education and open-source development.</p>
-            </div>
-        </div>
-
-        <div
-            style="background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 25px; padding: 3rem; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
-            <h3 style="color: #10b981; margin-bottom: 2rem; font-size: 1.8rem; text-align: center;">What We Do</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
-                <div style="padding: 1.5rem;">
-                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                        <span style="font-size: 1.8rem;">📚</span>
-                        <h4 style="color: #e0e0e0; font-size: 1.1rem;">Training &amp; Workshops</h4>
-                    </div>
-                    <p style="color: #9ca3af; line-height: 1.7;">Regular hands-on sessions covering Python, Linux,
-                        SimPEG, and industry-standard mining software.</p>
-                </div>
-                <div style="padding: 1.5rem;">
-                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                        <span style="font-size: 1.8rem;">🔬</span>
-                        <h4 style="color: #e0e0e0; font-size: 1.1rem;">Research Projects</h4>
-                    </div>
-                    <p style="color: #9ca3af; line-height: 1.7;">Collaborative research in geophysical inversion, ML
-                        applications, and 3D geological modeling.</p>
-                </div>
-                <div style="padding: 1.5rem;">
-                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                        <span style="font-size: 1.8rem;">🤝</span>
-                        <h4 style="color: #e0e0e0; font-size: 1.1rem;">Community Building</h4>
-                    </div>
-                    <p style="color: #9ca3af; line-height: 1.7;">Fostering a supportive network of professionals,
-                        students, and enthusiasts in mining analytics.</p>
-                </div>
-                <div style="padding: 1.5rem;">
-                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                        <span style="font-size: 1.8rem;">💻</span>
-                        <h4 style="color: #e0e0e0; font-size: 1.1rem;">Open Source Development</h4>
-                    </div>
-                    <p style="color: #9ca3af; line-height: 1.7;">Contributing to and developing tools that make mining
-                        data analysis more accessible.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===================== TOPICS ===================== -->
-    <section id="topics" style="max-width: 1200px; margin: 5rem auto; padding: 0 2rem;">
-        <h2
-            style="text-align: center; font-size: 2.5rem; margin-bottom: 3rem; background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-            Our Research Topics</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
-            <div class="stat" style="text-align: left;">
-                <div style="font-size: 2rem; margin-bottom: 1rem;">🔬</div>
-                <h3 style="color: #10b981; margin-bottom: 1rem; font-size: 1.3rem;">Geophysical Inversion</h3>
-                <p style="color: #9ca3af; line-height: 1.6;">Advanced techniques in electromagnetic, gravity, and
-                    seismic data inversion using SimPEG and modern algorithms.</p>
-            </div>
-            <div class="stat" style="text-align: left;">
-                <div style="font-size: 2rem; margin-bottom: 1rem;">📊</div>
-                <h3 style="color: #10b981; margin-bottom: 1rem; font-size: 1.3rem;">Machine Learning</h3>
-                <p style="color: #9ca3af; line-height: 1.6;">Applying AI and ML models for ore deposit prediction,
-                    mineral classification, and exploration optimization.</p>
-            </div>
-            <div class="stat" style="text-align: left;">
-                <div style="font-size: 2rem; margin-bottom: 1rem;">🗺️</div>
-                <h3 style="color: #10b981; margin-bottom: 1rem; font-size: 1.3rem;">3D Geological Modeling</h3>
-                <p style="color: #9ca3af; line-height: 1.6;">Building comprehensive subsurface models using Python,
-                    GemPy, and industry-standard software.</p>
-            </div>
-            <div class="stat" style="text-align: left;">
-                <div style="font-size: 2rem; margin-bottom: 1rem;">⚡</div>
-                <h3 style="color: #10b981; margin-bottom: 1rem; font-size: 1.3rem;">Data Processing</h3>
-                <p style="color: #9ca3af; line-height: 1.6;">Automated workflows for geochemical analysis, drilling
-                    data, and multi-sensor integration.</p>
-            </div>
-            <div class="stat" style="text-align: left;">
-                <div style="font-size: 2rem; margin-bottom: 1rem;">🌍</div>
-                <h3 style="color: #10b981; margin-bottom: 1rem; font-size: 1.3rem;">Remote Sensing</h3>
-                <p style="color: #9ca3af; line-height: 1.6;">Satellite imagery analysis for mineral exploration using
-                    spectral data and terrain modeling.</p>
-            </div>
-            <div class="stat" style="text-align: left;">
-                <div style="font-size: 2rem; margin-bottom: 1rem;">💻</div>
-                <h3 style="color: #10b981; margin-bottom: 1rem; font-size: 1.3rem;">Open Source Tools</h3>
-                <p style="color: #9ca3af; line-height: 1.6;">Development and training on Python libraries, Linux
-                    environments, and collaborative coding practices.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===================== FOOTER ===================== -->
-    <footer id="contact"
-        style="background: rgba(17, 24, 39, 0.8); backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8rem;">
-        <div style="max-width: 1200px; margin: 0 auto; padding: 4rem 2rem 2rem;">
-            <div
-                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; margin-bottom: 3rem;">
-                <div>
-                    <h3 style="color: #10b981; margin-bottom: 1.5rem; font-size: 1.2rem;">Mining Data Analysis</h3>
-                    <p style="color: #9ca3af; line-height: 1.8; margin-bottom: 1.5rem;">Empowering the next generation
-                        of mining professionals with cutting-edge data analysis skills and open-source technologies.</p>
-                </div>
-                <div>
-                    <h3 style="color: #10b981; margin-bottom: 1.5rem; font-size: 1.2rem;">Quick Links</h3>
-                    <div style="display: flex; flex-direction: column; gap: 0.8rem;">
-                        <a href="#home" style="color: #9ca3af; text-decoration: none; transition: color 0.3s;"
-                            onmouseover="this.style.color='#10b981'" onmouseout="this.style.color='#9ca3af'">Home</a>
-                        <a href="#hydrogeology" style="color: #9ca3af; text-decoration: none; transition: color 0.3s;"
-                            onmouseover="this.style.color='#10b981'"
-                            onmouseout="this.style.color='#9ca3af'">Hydrogeology Studies</a>
-                        <a href="#geophysics" style="color: #9ca3af; text-decoration: none; transition: color 0.3s;"
-                            onmouseover="this.style.color='#10b981'" onmouseout="this.style.color='#9ca3af'">Geophysics
-                            Studies</a>
-                        <a href="#topics" style="color: #9ca3af; text-decoration: none; transition: color 0.3s;"
-                            onmouseover="this.style.color='#10b981'" onmouseout="this.style.color='#9ca3af'">Research
-                            Topics</a>
-                        <a href="#about" style="color: #9ca3af; text-decoration: none; transition: color 0.3s;"
-                            onmouseover="this.style.color='#10b981'" onmouseout="this.style.color='#9ca3af'">About
-                            Us</a>
-                        <a href="#contact" style="color: #9ca3af; text-decoration: none; transition: color 0.3s;"
-                            onmouseover="this.style.color='#10b981'" onmouseout="this.style.color='#9ca3af'">Contact</a>
-                    </div>
-                </div>
-                <div>
-                    <h3 style="color: #10b981; margin-bottom: 1.5rem; font-size: 1.2rem;">Resources</h3>
-                    <div style="display: flex; flex-direction: column; gap: 0.8rem;">
-                        <a href="#" style="color: #9ca3af; text-decoration: none; transition: color 0.3s;"
-                            onmouseover="this.style.color='#10b981'"
-                            onmouseout="this.style.color='#9ca3af'">Documentation</a>
-                        <a href="#" style="color: #9ca3af; text-decoration: none; transition: color 0.3s;"
-                            onmouseover="this.style.color='#10b981'"
-                            onmouseout="this.style.color='#9ca3af'">Tutorials</a>
-                        <a href="#" style="color: #9ca3af; text-decoration: none; transition: color 0.3s;"
-                            onmouseover="this.style.color='#10b981'" onmouseout="this.style.color='#9ca3af'">Code
-                            Repository</a>
-                        <a href="#" style="color: #9ca3af; text-decoration: none; transition: color 0.3s;"
-                            onmouseover="this.style.color='#10b981'" onmouseout="this.style.color='#9ca3af'">Community
-                            Forum</a>
-                    </div>
-                </div>
-                <div>
-                    <h3 style="color: #10b981; margin-bottom: 1.5rem; font-size: 1.2rem;">Get In Touch</h3>
-                    <div style="display: flex; flex-direction: column; gap: 1rem; color: #9ca3af;">
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <span>📧</span><span>sylvestreytb18@gmail.com</span>
+                    <div class="footer-col">
+                        <h4>Resources</h4>
+                        <div class="footer-links">
+                            <a href="#">Documentation</a>
+                            <a href="#">Tutorials</a>
+                            <a href="#">Code Repository</a>
+                            <a href="#">Community Forum</a>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 0.5rem;"><span>📍</span><span>Yaoundé,
-                                Centre, CM</span></div>
-                        <div style="display: flex; align-items: center; gap: 0.5rem;"><span>📞</span><span>+237 693 561
-                                172</span></div>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Get In Touch</h4>
+                        <div class="contact-item"><span>📧</span><span>sylvestreytb18@gmail.com</span></div>
+                        <div class="contact-item"><span>📍</span><span>Yaoundé, Centre, CM</span></div>
+                        <div class="contact-item"><span>📞</span><span>+237 693 561 172</span></div>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>© 2026 Mining Data Analysis. All rights reserved.</p>
+                    <div class="footer-copy-links">
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
                     </div>
                 </div>
             </div>
-            <div
-                style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-                <p style="color: #6b7280; font-size: 0.9rem;">© 2026 Mining Data Analysis. All rights reserved.</p>
-                <div style="display: flex; gap: 2rem;">
-                    <a href="#"
-                        style="color: #6b7280; text-decoration: none; font-size: 0.9rem; transition: color 0.3s;"
-                        onmouseover="this.style.color='#10b981'" onmouseout="this.style.color='#6b7280'">Privacy
-                        Policy</a>
-                    <a href="#"
-                        style="color: #6b7280; text-decoration: none; font-size: 0.9rem; transition: color 0.3s;"
-                        onmouseover="this.style.color='#10b981'" onmouseout="this.style.color='#6b7280'">Terms of
-                        Service</a>
-                </div>
-            </div>
-        </div>
-    </footer>
+        </footer>
+
+    </div><!-- .page -->
 
     <script>
-        const terminalCommand = document.querySelector('.terminal-command');
-        const originalText = terminalCommand.textContent;
-        terminalCommand.textContent = '';
-        let i = 0;
-        function typeWriter() {
-            if (i < originalText.length) {
-                terminalCommand.textContent += originalText.charAt(i);
-                i++;
-                setTimeout(typeWriter, 50);
+        /* ── PARTICLES ── */
+        (function () {
+            const c = document.getElementById('bg-canvas');
+            const ctx = c.getContext('2d');
+            let W, H, pts = [];
+            function resize() { W = c.width = innerWidth; H = c.height = innerHeight }
+            resize(); window.addEventListener('resize', resize);
+            for (let i = 0; i < 70; i++) pts.push({
+                x: Math.random() * innerWidth, y: Math.random() * innerHeight,
+                vx: (Math.random() - .5) * .3, vy: (Math.random() - .5) * .3,
+                r: Math.random() * 1.5 + .5, a: Math.random() * .6 + .2
+            });
+            function draw() {
+                ctx.clearRect(0, 0, W, H);
+                for (let i = 0; i < pts.length; i++) {
+                    let p = pts[i];
+                    p.x += p.vx; p.y += p.vy;
+                    if (p.x < 0 || p.x > W) p.vx *= -1;
+                    if (p.y < 0 || p.y > H) p.vy *= -1;
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(16,185,129,${p.a * .5})`; ctx.fill();
+                    for (let j = i + 1; j < pts.length; j++) {
+                        let q = pts[j], dx = p.x - q.x, dy = p.y - q.y, d = Math.sqrt(dx * dx + dy * dy);
+                        if (d < 130) {
+                            ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y);
+                            ctx.strokeStyle = `rgba(16,185,129,${(1 - d / 130) * .12})`; ctx.lineWidth = 1; ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(draw);
             }
-        }
-        setTimeout(typeWriter, 1000);
+            draw();
+        })();
 
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
+        /* ── NAV SCROLL ── */
+        window.addEventListener('scroll', () => {
+            document.getElementById('topnav').classList.toggle('scrolled', scrollY > 60);
+        });
+
+        /* ── SMOOTH SCROLL ── */
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
                 e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                const t = document.querySelector(a.getAttribute('href'));
+                if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
             });
         });
+
+        /* ── REVEAL ON SCROLL ── */
+        const ro = new IntersectionObserver(entries => {
+            entries.forEach((e, i) => {
+                if (e.isIntersecting) {
+                    setTimeout(() => e.target.classList.add('visible'), i * 80);
+                    ro.unobserve(e.target);
+                }
+            });
+        }, { threshold: .12 });
+        document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+
+        /* ── TYPEWRITER ── */
+        (function () {
+            const cmd = document.getElementById('typed-cmd');
+            const out = document.getElementById('typed-out');
+            const cur = document.getElementById('t-cursor');
+            const text = ' echo "Your mining data analysis journey starts here..."';
+            let i = 0;
+            function type() {
+                if (i < text.length) { cmd.textContent += text[i++]; setTimeout(type, 45); }
+                else {
+                    setTimeout(() => { out.style.opacity = '1'; cur.style.display = 'none'; }, 400);
+                }
+            }
+            setTimeout(type, 1200);
+        })();
     </script>
 </body>
 
